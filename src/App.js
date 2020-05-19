@@ -2,10 +2,10 @@ import React, { useState, useCallback, useRef } from 'react';
 
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { formatRelative } from 'date-fns';
-import '@reach/combobox/styles.css';
+
+import SearchBar from './components/SearchBar';
 
 import mapStyles from './util/mapStyles';
-
 import './App.css';
 
 const libraries = ['places'];
@@ -49,6 +49,11 @@ const App = () => {
     mapRef.current = map;
   }, []);
 
+  const panTo = useCallback(({ lat, lng }) => {
+    mapRef.current.panTo({ lat, lng });
+    mapRef.current.setZoom(14);
+  }, []);
+
   if (loadError) return 'Error loading maps';
   if (!isLoaded) return ' Loading maps';
 
@@ -57,6 +62,8 @@ const App = () => {
       <div className="map-logo">
         <h1>HI</h1>
       </div>
+
+      <SearchBar panTo={panTo} />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={8}
