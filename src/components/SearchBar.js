@@ -22,6 +22,8 @@ const SearchBar = ({ panTo }) => {
     <div className="search">
       <Combobox
         onSelect={async (address) => {
+          setValue(address, false);
+          clearSuggestions();
           try {
             const results = await getGeocode({ address });
             const { lat, lng } = await getLatLng(results[0]);
@@ -39,8 +41,10 @@ const SearchBar = ({ panTo }) => {
           placeholder="Enter an address"
         />
         <ComboboxPopover>
-          {status === 'OK' &&
-            data.map(({ id, description }) => <ComboboxOption key={id} value={description} />)}
+          <ComboboxList>
+            {status === 'OK' &&
+              data.map(({ id, description }) => <ComboboxOption key={id} value={description} />)}
+          </ComboboxList>
         </ComboboxPopover>
       </Combobox>
     </div>

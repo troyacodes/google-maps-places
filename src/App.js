@@ -4,6 +4,7 @@ import { GoogleMap, useLoadScript, Marker, InfoWindow } from '@react-google-maps
 import { formatRelative } from 'date-fns';
 
 import SearchBar from './components/SearchBar';
+import Locate from './components/Locate';
 
 import mapStyles from './util/mapStyles';
 import './App.css';
@@ -64,6 +65,7 @@ const App = () => {
       </div>
 
       <SearchBar panTo={panTo} />
+      <Locate panTo={panTo} />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={8}
