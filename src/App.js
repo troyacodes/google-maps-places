@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { formatRelative } from 'date-fns';
@@ -31,8 +31,23 @@ const App = () => {
   });
 
   const [markers, setMarkers] = useState([]);
+  const [selected, setSelected] = useState(null);
 
-  console.log(markers);
+  const onMapClick = useCallback((e) => {
+    setMarkers((current) => [
+      ...current,
+      {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+        time: new Date(),
+      },
+    ]);
+  }, []);
+
+  const mapRef = useRef();
+  const onMapLoad = useCallback((map) => {
+    mapRef.current = map;
+  }, []);
 
   if (loadError) return 'Error loading maps';
   if (!isLoaded) return ' Loading maps';
@@ -47,20 +62,28 @@ const App = () => {
         zoom={8}
         center={center}
         options={options}
-        onClick={(e) => {
-          setMarkers((current) => [
-            ...current,
-            {
-              lat: e.latLng.lat(),
-              lng: e.latLng.lng(),
-              time: new Date(),
-            },
-          ]);
-        }}
+        onClick={onMapClick}
+        onLoad={onMapLoad}
       >
         {markers.map((marker) => (
-          <Marker key={marker.time.toISOString()} position={{ lat: marker.lat, lng: marker.lng }} />
+          <Marker
+            key={marker.time.toISOString()}
+            position={{ lat: marker.lat, lng: marker.lng }}
+            onClick={() => setSelected(marker)}
+          />
         ))}
+
+        {selected ? (
+          <InfoWindow
+            position={{ lat: selected.lat, lng: selected.lng }}
+            onCloseClick={() => setSelected(null)}
+          >
+            <div>
+              <h2>Text</h2>
+              <p>Date {formatRelative(selected.time, new Date())}</p>
+            </div>
+          </InfoWindow>
+        ) : null}
       </GoogleMap>
     </div>
   );
